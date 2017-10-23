@@ -8,6 +8,7 @@ load filter_coeffs
 change_coeffs = 0;
 
 %% Input signal
+
 % Sampling Frequency
 Fs = 192 * 10^3;
 
@@ -44,6 +45,7 @@ colorbar
 title('Spectrogram')
 
 %% Coefficients for lowpass filter
+
 % Response Type:  Lowpass
 % Design Method:  IIR - Butterworth
 % Fs:             192000
@@ -63,7 +65,13 @@ if change_coeffs
     iir_lowpass.Den = Den;
     save('filter_coeffs', 'iir_lowpass');
 end;
+
+figure(4)
+zplane(iir_lowpass.Num, iir_lowpass.Den)
+title('Low pass filter 1');
+
 %% Filter audible signal
+
 % Sampling frequency for audible signal
 Fs_low = Fs / 4;
 
@@ -71,7 +79,7 @@ Fs_low = Fs / 4;
 y1.lowpass_time = filter(iir_lowpass.Num,iir_lowpass.Den, x.time);
 
 % Time Domain
-figure(4)
+figure(5)
 plot(t, y1.lowpass_time)
 title('Input signal after Lowpass')
 xlabel('Time (s)')
@@ -84,6 +92,7 @@ y1.time_filter_down = y1.lowpass_time(1:Fs/Fs_low:end);
 sound(y1.time_filter_down, Fs_low)
 
 %% Coefficients for bandpass filter
+
 % Response Type:  bandpass
 % Design Method:  IIR - Butterworth
 % Fs:             192000
@@ -107,11 +116,15 @@ if change_coeffs
     save('filter_coeffs', 'iir_bandpass', '-append');
 end;
 
+figure(6)
+zplane(iir_bandpass.Num, iir_bandpass.Den)
+title('Bandpass filter');
+
 %% Filter high frequency signal
 y2.time = filter(iir_bandpass.Num, iir_bandpass.Den, x.time);
 
 % Time Domain
-figure(5)
+figure(7)
 plot(t, y2.time)
 title('High frequency signal after bandpass')
 xlabel('Time (s)')
@@ -121,7 +134,7 @@ ylabel('Amplitude')
 y2.freq = fft(y2.time);
 
 % Frequency Domain
-figure(6)
+figure(8)
 plot(f/1e3, abs(fftshift(y2.freq)))
 title('High frequency signal after bandpass')
 xlabel('Frequency (KHz)')
@@ -129,6 +142,7 @@ ylabel('Amplitude')
 
 
 %% Demodulate high frequency signal
+
 % Mininum frequency of the high frequency signal
 f_low = 56e3;
 
@@ -136,7 +150,7 @@ f_low = 56e3;
 y2.demodulated = y2.time .* cos(2*pi*f_low*t');
 
 % Time Domains
-figure(7)
+figure(9)
 plot(t, y2.demodulated)
 xlabel('time (KHz)')
 title('Demodulated high frequency signal')
@@ -146,13 +160,14 @@ ylabel('Amplitude');
 y2.demodulated_freq = fft(y2.demodulated);
 
 % Frequency Domain
-figure(8)
+figure(10)
 plot(f/1e3, abs(fftshift(y2.demodulated_freq)))
 title('Demodulated High frequency signal ');
 xlabel('Frequency (KHz)')
 ylabel('Amplitude');
 
 %% Coefficients for lowpass filter (to filter high frequency demodulated signal)
+
 % Response Type:  Lowpass
 % Design Method:  IIR - Butterworth
 % Fs:             192000
@@ -174,11 +189,15 @@ if change_coeffs
     save('filter_coeffs', 'iir_lowpass_2', '-append');
 end;
 
+figure(11)
+zplane(iir_lowpass_2.Num, iir_lowpass_2.Den)
+title('Lowpass filter for demodulated high frequency signal')
+
 %% Filter demodulated high frequency signal
 y2.base_band = filter(iir_lowpass_2.Num, iir_lowpass_2.Den, y2.demodulated);
 
 % Time domain
-figure(9)
+figure(12)
 plot(t, y2.base_band )
 title('High frequency signal in base band')
 xlabel('Time (s)')
@@ -187,7 +206,7 @@ ylabel('Amplitude')
 y2.base_band_freq = fft(y2.base_band);
 
 % Frequency domain
-figure(10)
+figure(13)
 plot(f/1e3, abs(fftshift(y2.base_band_freq)))
 title('High frequency signal in base band')
 xlabel('Frequency (KHz)')
@@ -198,7 +217,7 @@ sound(y2.base_band, Fs_low);
 y2.base_band_downsampled = y2.base_band(1:Fs/Fs_low:end);
 
 % Time domain
-figure(11)
+figure(14)
 plot(f(1:Fs/Fs_low:end), y2.base_band_downsampled )
 title('Downsampled High frequency signal in base band')
 xlabel('Time (s)')
@@ -213,7 +232,7 @@ n_low = 0: N_low;
 f_low = (n_low - N_low/2) * Fs_low / N_low;
 
 % Time domain (downsampled)
-figure(12)
+figure(15)
 plot(f_low/1e3, abs(fftshift(y2.base_band_downsampled_freq)))
 title('Downsampled High frequency signal in base band')
 xlabel('Frequency (KHz)')
