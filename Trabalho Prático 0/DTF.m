@@ -5,6 +5,7 @@ clear; clc; close all;
 % [ANALITICO]
 
 %% Ex 2
+
 % Número de amostras e vetor de indices
 N = 2;
 n = 0:N-1;
@@ -19,30 +20,31 @@ B = fft(b);
 
 figure(1)
 subplot(221)
-plot(n, a, 'x', 'MarkerSize', 10, 'LineWidth', 4);
+stem(n, a, 'x', 'MarkerSize', 10, 'LineWidth', 2);
 title('Sinal a')
 xlabel('Indíce_{amostra}')
 ylabel('Amplitude')
 
 subplot(222)
-plot(n, A, 'x', 'MarkerSize', 10, 'LineWidth', 4)
+stem(n, A, 'x', 'MarkerSize', 10, 'LineWidth', 2)
 title('DFT sinal a')
 xlabel('Indíce_{amostra}')
 ylabel('Amplitude')
 
 subplot(223)
-plot(n, b, 'x', 'MarkerSize', 10, 'LineWidth', 4)
+stem(n, b, 'x', 'MarkerSize', 10, 'LineWidth', 2)
 title('Sinal b')
 xlabel('Indíce_{amostra}')
 ylabel('Amplitude')
 
 subplot(224)
-plot(n, B, 'x', 'MarkerSize', 10, 'LineWidth', 4)
+stem(n, B, 'x', 'MarkerSize', 10, 'LineWidth', 2)
 title('DFT sinal b')
 xlabel('Indíce_{amostra}')
 ylabel('Amplitude')
 
 %% Exercício 3
+
 % Número de amostras e vetor de indices
 N = 4;
 n = 0:N-1;
@@ -53,18 +55,20 @@ X = fft(x);
 figure(2)
 subplot(211)
 stem(n, x, 'x', 'MarkerSize', 10, 'LineWidth', 3);
-title('Sinal a')
+title('Sinal x')
 xlabel('Indíce_{amostra}')
 ylabel('Amplitude')
 grid on
 
 subplot(212)
 stem(n, X, 'x', 'MarkerSize', 10, 'LineWidth', 3)
-title('DFT sinal a')
+title('DFT sinal x')
 xlabel('Indíce_{amostra}')
 ylabel('Amplitude')
 grid on
+
 %% Exercício 4
+
 % Número de amostras e vetor de indices
 N = 100;
 n = 0:N-1;
@@ -80,7 +84,7 @@ hold off
 title('Sinal x');
 xlabel('Amostras');
 ylabel('Amplitude');
-legend('Valor amostras', 'sinal interpolado')
+legend('Sinal no instante de amostragem', 'sinal interpolado')
 
 %% Alínea a)
 X = fft(x);
@@ -99,6 +103,7 @@ xlabel('Amostras');
 ylabel('Amplitude');
 
 %% Alínea b)
+
 % Número de amostras por símbolo e vetor de indices
 L = 2;
 l = 0:2*N-1;
@@ -113,7 +118,7 @@ figure(5)
 subplot(2,2,[1,2])
 stem(l(1:L:end), x, 'x')
 hold on
-stem(l, z, 's')
+stem(l, z, 'o')
 hold off
 title('Sinal z vs x')
 xlabel('Indíce das amostras')
@@ -139,7 +144,18 @@ title({'DFT(z) vs DFT(x)', 'centrada em 0'});
 xlabel('Amostras');
 ylabel('Amplitude');
 
+% A DFT do sinal Z passa a ter o dobro das componentes na frequência. Tendo
+% o sinal x 100 amostras, a sua frequência de amostragem mínima é 50 Hz. Como
+% a frequência da sinusoide é 40 Hz, temos um dirac a f (40 Hz) e a (2*Fs - f)
+% (2*50 - 40 = 60). No caso do sinal z, temos o dobro das amostras, logo a
+% frequência de amostragem máxima é 100 Hz. Como a frequência do sinal se
+% mantem, continuamos a ter os diracs à mesma frequência que o sinal x, mas
+% possuimos duas novas riscas no espectro: Fs + f = 100 +
+% 40 = 140 e 2*Fs - f = 200 - 40 = 160
+
+
 %% Alínea c
+
 % Número de símbolos por amostra e respetivo vetor de indices
 M = 2;
 m = 0:N/M-1;
@@ -152,14 +168,14 @@ figure(6)
 subplot(2,2,[1,2])
 stem(n, x, 'x')
 hold on
-stem(m, y, 's')
+stem(n(1:M:end), y, 's')
 hold off
 title('Sinal y vs x')
 xlabel('Indíce das amostras')
 ylabel('Amplitude')
 
 subplot(223)
-stem(m, abs(Y), 'x', 'MarkerSize', 5)
+stem(n(1:M:end), abs(Y), 'x', 'MarkerSize', 5)
 hold on
 stem(n, abs(X), '.', 'MarkerSize', 20)
 hold off
@@ -169,16 +185,24 @@ xlabel('Amostras');
 ylabel('Amplitude');
 
 subplot(224)
-stem(-N/(M*2):N/(2*M)-1, abs(fftshift(Y)), 'x', 'MarkerSize', 5)
+stem((-N/(M*2):N/(2*M)-1), abs(fftshift(Y)), 'x', 'MarkerSize', 5)
 hold on
-stem(-N/2:N/2-1, abs(fftshift(X)), '.', 'MarkerSize', 20)
+stem((-N/2:N/2-1), abs(fftshift(X)), '.', 'MarkerSize', 20)
 hold off
 legend('Y', 'X')
 title({'DFT(y) vs DFT(x)', 'centrada em 0'});
 xlabel('Amostras');
 ylabel('Amplitude');
 
+% Ao reduzir o número de amostras para metade, a frequência de amsotragem
+% do sinal y também é reduzida para metade, 25 Hz. Como o sinal x possui
+% componentes a 40 Hz, a redução da frequência de amostragem sem respeitar
+% o Teorema da amostragem e as regras de Nyquist introduz aliasing. Assim,
+% vamos ter um dirac à frequência de 40/2 = 20 Hz e outro a 100 - 40/2 = 80
+% Hz. Estas componentes não existem no sinal original
+
 %% Exercício 5
+
 % Frequência de amostragem da sinudoide anterior
 Fa_x = 200;
 
@@ -191,20 +215,22 @@ k = 40;
 f_x = Fa_x/N * k
 
 %% Alínea b)
+
 % Dados da sinusoide y[n]: N(número de amostras), k(valor da risca no espectro)
-N = 100/M;
+Nb = 100/M;
 k = 10;
 
 % Frequência de amostragem passa para metade porque o número de samples
 % também Fa = Fs * Num_samples
-Fa_y = Fa_x / M;
+Fa_y = Fa_x / M
 
 % Frequência [Hz] da sinusoide da sequência y[n]
-f_y = Fa_y/N * k
+f_y = Fa_y/Nb * k
 
 %% Alínea c)
+
 % Dados da sinusoide z[n]: N(número de amostras), k1,k2(valores da riscas no espectro)
-N = 100*L;
+Nc = N*L;
 k1 = 40;
 k2 = 60;
 
@@ -213,5 +239,5 @@ k2 = 60;
 Fa_z = L * Fa_x;
 
 % Frequência [Hz] da sinusoide da sequência z[n]
-f_z1 = Fa_z/N * k1
-f_z2 = Fa_z/N * k2
+f_z1 = Fa_z/Nc * k1
+f_z2 = Fa_z/Nc * k2
