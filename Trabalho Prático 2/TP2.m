@@ -618,22 +618,27 @@ legend('y', '\delta')
 %% Ex4 - b)
 % i. Função de transferência do equalizador
 % Hb filter parameters
-Hb.Nfilter = 90;        % Filter Order
+Hb.Nfilter = 100;        % Filter Order
 Hb.fc = 2000;            % Cut Frequency      [Hz]
 Hb.num = fir1(Hb.Nfilter, Hb.fc/(Fs/2), 'low');
 Hb.den = 1;
 
 % Ht filter parameters
-Ht.Nfilter = 100;        % Filter Order
+Ht.Nfilter = 90;        % Filter Order
 Ht.fc = 6000;            % Cut Frequency      [Hz]
 Ht.num = fir1(Ht.Nfilter, Ht.fc/(Fs/2), 'high');
 Ht.den = 1;
 
 % Equalizador
-start_idx = Ht.Nfilter - Hb.Nfilter + 1;
-h5.num = Gt * Ht.num;
-h5.num(start_idx:end) = h5.num(start_idx:end) + Gb * Hb.num;
-h5.num(51) = h5.num(51) + A;
+% O atraso deve estar centrado. Para isso é preciso fazer um pad com zeros
+% à frente igual ao atraso e shiftar o sinal o número de amostras
+% necessárias para os sinais ficarem com a mesma dimensão
+idx = abs(Ht.Nfilter - Hb.Nfilter)/2;
+A_delay = max(Hb.Nfilter, Ht.Nfilter)/2;
+h5.num = Gb * Hb.num;
+h5.num(idx+1:end-idx) = h5.num(idx+1:end-idx) + Gt * Ht.num;
+h5.num(end-idx+1:end) = zeros(1, idx);
+h5.num(A_delay + 1) = h5.num(A_delay + 1) + A;
 h5.den = 1;
 
 
@@ -702,10 +707,12 @@ title('Impulse response | H_4(\delta)')
 legend('y', '\delta')
 
 % Temos de usar o filtro Hb (LPF) com uma ordem inferior. Por isso, este
-% filtro tem de sofrer um atraso igual à diferença de ordens dos filtros
-% (neste caso, 10). Não pode ser o filtro passa alto a ser de ordem
-% inferior porque senão influencia o LPF e a resposta é alterada. O atraso
-% de A deve-se manter constante
+% filtro tem de sofrer um atraso igual a metade da  diferença de ordens dos
+% filtros (neste caso, 10/2 = 5). Não pode ser o filtro passa alto a ser de
+% ordem inferior porque senão influencia o LPF e a resposta é alterada. 
+% O atraso de A deve-se ser igual ao atraso introduzido pelo filtro com
+% maior ordem
+% o atraso introduzido por um filtro é metade da sua ordem
 
 % Os resultados são idênticos à alínea a)
 
