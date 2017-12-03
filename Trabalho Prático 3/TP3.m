@@ -5,7 +5,7 @@ close all;
 
 %% a)
 % Load the image and show
-% Não posso usar im2double porque gera-me double \in [0, 1] e os pessos não
+% Não posso usar im2double porque gera-me double \in [0, 1] e os pesos não
 % estão nessa gama
 image = double(imread('ImagensA/airfield02g.tif')) - 128;
 figure(1)
@@ -78,7 +78,7 @@ for k = 1:L
     zigzagMask = izigzag(Lvector, 8, 8);
     
     % Quantificador em zigzag
-    my_zigzagQ = @(block_struct) round(my_dct(block_struct) ./ steps) .* zigzagMask ;
+    my_zigzagQ = @(block_struct) round(my_dct(block_struct) ./ steps .* zigzagMask );
 
     % Aplicar a Quantificação com zigzag bloco a bloco (8x8)
     imZigZagQ = blockproc(image, [8 8], my_zigzagQ);
